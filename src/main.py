@@ -9,6 +9,7 @@ torch.manual_seed(100)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
+print(device)
 
 def args_parse():
     parser = argparse.ArgumentParser(description='PyTorch PennTreeBank RNN/LSTM Language Model')
@@ -17,7 +18,7 @@ def args_parse():
     parser.add_argument('--embed_size', type=int, default=400)
     parser.add_argument('--n_hid', type=int, default=400)
     parser.add_argument('--n_layers', type=int, default=2)
-    parser.add_argument('--lr', type=float, default=20)
+    parser.add_argument('--l_rate', type=float, default=20)
     parser.add_argument('--clip', type=float, default=0.25)
     parser.add_argument('--epochs', type=int, default=30)
     parser.add_argument('--batch_size', type=int, default=50)
@@ -37,7 +38,6 @@ def batchify(data, bsz):
 
 
 def repackage_hidden(h):
-    # detach
     return tuple(v.clone().detach() for v in h)
 
 
@@ -85,9 +85,9 @@ def train():
         if batch % interval == 0 and batch > 0:
             cur_loss = total_loss / interval
             elapsed = time.time() - start_time
-            print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
+            print('| epoch {:3d} | {:5d}/{:5d} batches | l_rate {:02.2f} | ms/batch {:5.2f} | '
                     'loss {:5.2f} | ppl {:8.2f}'.format(
-                epoch, batch, len(train_data) // args.bptt, lr,
+                epoch, batch, len(train_data) // args.bptt, l_rate,
                 elapsed * 1000 / interval, cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
@@ -109,14 +109,14 @@ if __name__ == "__main__":
 
     print(model)
     criterion = nn.CrossEntropyLoss()
-    lr = args.lr
+    l_rate = args.l_rate
     best_val_loss = None
-    opt = torch.optim.SGD(model.parameters(), lr=lr)
+    opt = torch.optim.SGD(model.parameters(), lr=l_rate)
     if args.opt == 'Adam':
         opt = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.9, 0.99))
-        lr = 0.001
+        l_rate = 0.001
     if args.opt == 'Momentum':
-        opt = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.8)
+        opt = torch.optim.SGD(model.parameters(), lr=l_rate, momentum=0.8)
 
     try:
         for epoch in range(1, args.epochs+1):
@@ -134,22 +134,20 @@ if __name__ == "__main__":
                 best_val_loss = val_loss
             else:
                 if args.opt == 'SGD' or args.opt == 'Momentum':
-                    lr /= 4.0
+                    l_rate /= 4.0
                     for group in opt.param_groups:
-                        group['lr'] = lr
+                        group['l_rate'] = l_rate
 
     except KeyboardInterrupt:
         print('-' * 89)
-        print('Exiting from training early')
+        print('Exitted from training early stoping')
 
-    # Load the best saved model.
     with open(args.save, 'rb') as f:
         model = torch.load(f)
 
-    # Run on test data.
     test_loss = evaluate(test_data)
-    print('=' * 89)
+    print('=' * 80)
     print('| End of training | test loss {:5.2f} | test ppl {:8.2f}'.format(
         test_loss, math.exp(test_loss)))
-    print('=' * 89)
+    print('=' * 80)
 

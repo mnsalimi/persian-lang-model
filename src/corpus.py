@@ -19,24 +19,20 @@ class Dictionary(object):
 class Corpus(object):
     def __init__(self, path):
         self.dictionary = Dictionary()
-        # three tensors of word index
-        self.train = self.tokenize(os.path.join(path, 'ptb.train.txt'))
-        self.valid = self.tokenize(os.path.join(path, 'ptb.valid.txt'))
-        self.test = self.tokenize(os.path.join(path, 'ptb.test.txt'))
+        self.train = self.tokenize(os.path.join(path, 'sample.train.txt'))
+        self.valid = self.tokenize(os.path.join(path, 'sample.valid.txt'))
+        self.test = self.tokenize(os.path.join(path, 'sample.test.txt'))
 
     def tokenize(self, path):
         assert os.path.exists(path)
-        # Add words to the dictionary
         with open(path, 'r') as f:
             tokens = 0
             for line in f:
-                # line to list of token + eos
                 words = line.split() + ['<eos>']
                 tokens += len(words)
                 for word in words:
                     self.dictionary.add_word(word)
 
-        # Tokenize file content
         with open(path, 'r') as f:
             ids = torch.LongTensor(tokens)
             token = 0
