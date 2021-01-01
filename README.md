@@ -27,8 +27,7 @@ This package tested on:
 `python3 -m pip install -r requirements.txt`</br>
 
 # Usage
-
-for training and testing model, run:
+To training and testing model, run:</br>
 `source env/bin/activate`</br>
 `cd src`</br>
 `python3 main.py --data ../input --embed_size 400 n_hid 400 --n_layers 2 --l_rate 20 --epochs 30 `
