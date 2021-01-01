@@ -10,7 +10,7 @@ This package tested on:
 ```
 --data             folder of data path
 --embed_size       embedding size
---n_hid            dimension of hidden layers
+--n_hidden         dimension of hidden layers
 --n_layers         the number of layers
 --l_rate           learning rate
 --epochs           epochs number
@@ -18,7 +18,7 @@ This package tested on:
 --bptt             sequence length
 --dropout          dropout
 --save             path to save the  model
---optimzer         (SGD, Momentum, Adam, RMSprop)
+--optimzer         (SGD, Momentum, Adam)
 ```
 
 # Install
